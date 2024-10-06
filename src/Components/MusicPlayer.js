@@ -4,19 +4,21 @@ import React, { useEffect, useState } from "react";
 import { storage } from "../firebase";
 import { ref, listAll, getDownloadURL } from "firebase/storage";
 
-const MusicPlayer = () => {
+const MusicPlayer = ({emotion="Happy"}) => {
   const [songs, setSongs] = useState([]);
   const [currentSong, setCurrentSong] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     const fetchSongs = async () => {
-      let emotion = "Happy";
       const songsListRef = ref(storage, `songs/${emotion}`); // Path to your songs folder in Firebase Storage
       const songRefs = await listAll(songsListRef);
       const songUrls = await Promise.all(
         songRefs.items.map((songRef) => getDownloadURL(songRef))
       );
+    
+      console.log(songUrls);
+      
       setSongs(songUrls);
     };
 
@@ -24,6 +26,8 @@ const MusicPlayer = () => {
   }, []);
 
   const playRandomSong = () => {
+    console.log("called");
+    
     if (songs.length === 0) return; // Do nothing if no songs are available
 
     const randomIndex = Math.floor(Math.random() * songs.length);
@@ -46,8 +50,8 @@ const MusicPlayer = () => {
   };
 
   return (
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h1>Firebase Music Player</h1>
+    <div >
+     
       <button onClick={playRandomSong}>Play Random Song</button>
       <audio id="audio" />
     </div>
